@@ -1,7 +1,8 @@
 Навигация:
 @Создание и настройка проэкта
 @Контроллеры
-
+@Шаблонизатор ejs
+@Создание статического сайте Node.js + express
 ===== @Создание и настройка проэкта =====
 1. Установить в Node js
 2. В корневой папке выполнить команду express
@@ -28,10 +29,19 @@ npm i nodemon и потом просто в терминале вместо npm 
     taskkill /PID 9192 - номер PID берется с команды что выше в последней колонки
 /////Запустить сервер снова
 
+===== @Шаблонизатор ejs =====
+site https://ejs.co/
+<%#  не будет выводиться комментарий %>
+@Ускорение рендера
 ===== @Контроллеры =====
 В папке controllers сщздать main.js
 @Создание контроллера
 @Подключение контроллера
 @Использование контроллера
-
-закончил на 7 минуте
+============ @Создание статического сайте Node.js + express ========
+Для этого создано 
+router.get('/', locationController.homelist);
+router.get('/location', locationController.locationInfo);
+router.get('/location/review/new', locationController.addReview);
+router.get('/about', otherController.about);
+MVC - Концепция
