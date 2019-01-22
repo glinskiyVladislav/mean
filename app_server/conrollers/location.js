@@ -1,4 +1,19 @@
-module.exports.homelist = function(req, res) {
+let request = require('request');
+let apiOptions = {
+	server: 'http://localhost:3000'
+};
+
+let renderHomePage = (req, res, bodyResponse) => {
+	let message;
+	if(!(bodyResponse instanceof Array)) {
+		message = "Ошибка обращения к API";
+		bodyResponse = [];
+	} else {
+		if(!bodyResponse.length) {
+			message = "Нет мест поблизости";
+		}
+	}
+
 	res.render('locations-list', {
 		title: 'Loc8r - Найдите место для работы рядом!',
 		pageHeader: {
@@ -8,28 +23,47 @@ module.exports.homelist = function(req, res) {
 		sidebar: "Ищете хорошее место для отдыха? Loc8r поможет вам найти место" 
 		+ "по душе где вы сможете удобно поработать. Возможно с кофе, пироженным или пиццей. Loc8r поможет найти " 
 		+ "вам любое место",
-		locations: [{
-			name: 'Сушия',
-			address: 'Невский проспект, 108',
-			rating: 3,
-			facilities: ["Вкусный кофе", "Хорошие роллы", "Прекрасный вай-фай"],
-			distance: '100м'
-		},
-		{
-			name: 'Lounge-кафе "Relax"',
-			address: 'Литейный проспект, 47',
-			rating: 4,
-			facilities: ["Удобные диваны", "Вкусные кальяны", "Вип-комнаты"],
-			distance: '500м'
-		},
-		{
-			name: 'McDonalds',
-			address: 'Невский проспект, 97',
-			rating: 2,
-			facilities: ["Хороший вай-фай", "Вкусная еда"],
-			distance: '250м'
-		}]
+		locations: bodyResponse,
+		message
 	});
+};
+
+let _formatDistance = function(distance) {
+	let numDistance, unit;
+	if(distance > 1000) {
+		numDistance = parseFloat(distance/1000).toFixed(1);
+		unit = ' км';
+	} else {
+		numDistance = parseInt(distance);
+		unit = ' м';
+	}
+	return numDistance + unit;
+};
+
+module.exports.homelist = function(req, res) {
+	let requestOption, url;
+	url = apiOptions.server + '/api/locations';
+	requestOption = {
+		method: 'GET',
+		json: {},
+		qs: {
+			lng: 50.9749046,
+			lat: 30.4715074
+		}
+	};
+
+	request(url, requestOption,(err, response, body) => {
+		let i, data;
+		data = body;
+		if(response.statusCode === 200 && data.length) {
+			for(i = 0; i < data.length; i++) {
+				data[i].distance = _formatDistance(data[i].distance);
+			}
+		}
+
+		renderHomePage(req, res, data);
+	});
+
 };
 
 module.exports.locationInfo = function(req, res) {

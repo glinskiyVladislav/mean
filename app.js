@@ -3,9 +3,14 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+// @Сделать что б база запускалась сразу
+require('./app_api/models/db');
 
-let indexRouter = require('./app_server/routes/index');
-let usersRouter = require('./app_server/routes/users');
+
+let Routes = require('./app_server/routes/index');
+// @Подключение API
+let RoutesApi = require('./app_api/routes/index');
+let users = require('./app_server/routes/users');
 
 let app = express();
 
@@ -19,8 +24,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', Routes);
+// @Подключение API
+app.use('/api', RoutesApi);
+app.use('/users', users);
 
 //@Ускорение рендера путем минификации файла
 app.use((req, res, next) => {
